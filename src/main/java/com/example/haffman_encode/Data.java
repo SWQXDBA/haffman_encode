@@ -22,7 +22,6 @@ public class Data implements Serializable {
         this.encodeMapper = mapper.encodeMapper;
         this.decodeMapper = mapper.decodeMapper;
     }
-    //
     public String mapKey;
     //数据的位数 除了data中标记的以外，其他都是0
     private int length;
@@ -30,20 +29,16 @@ public class Data implements Serializable {
     public String decode() {
         StringBuilder builder = new StringBuilder();
         try {
-            Collection<String> strings1 = null;
-            strings1 = deCode();
-            strings1.forEach(o -> builder.append(o).append(" "));
+            deCode().forEach(o -> builder.append(o).append(" "));
         } catch (CantDecodeException e) {
             e.printStackTrace();
         }
         return builder.toString();
     }
 
-    //111 222 333 222 111 5
-    //11131 23131 1 1 2 2 3 33 11 22 22 111 333 11131 77
     public void encoder(String s) {
 
-        List<String> strings = Arrays.stream(s.split("\n")).flatMap(str-> Stream.of(str.split(" "))).collect(Collectors.toList());
+        List<String> strings = Arrays.asList(s.split("\n"));
 
         Map<String, Integer> map = new HashMap<>();
         //设置权重为频率
@@ -84,7 +79,7 @@ public class Data implements Serializable {
         }
         return stringBuilder.toString();
     }
-
+    @SuppressWarnings({"unchecked"})
     private <T> Collection<T> deCode() throws CantDecodeException {
         List<T> list = new ArrayList<>();
 
