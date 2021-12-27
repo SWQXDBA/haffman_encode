@@ -29,6 +29,16 @@ public class SaveHelper {
 
     }
 
+    public static  <T> byte[] toBytes(T obj)throws IOException {
+
+        ByteArrayOutputStream opt = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(opt);
+        oos.writeObject(obj);
+        oos.flush();
+        byte[] bytes = opt.toByteArray();
+        oos.close();
+        return bytes;
+    }
     public <T> void saveToBuffer(T obj) throws IOException {
         ByteArrayOutputStream opt = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(opt);

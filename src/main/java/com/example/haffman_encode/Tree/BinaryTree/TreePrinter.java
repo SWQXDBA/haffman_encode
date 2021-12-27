@@ -103,6 +103,7 @@ public class TreePrinter {
             }
             stringBuilder.append("\n\n");
             curLevel++;
+
         }
         return stringBuilder.toString();
     }
