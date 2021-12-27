@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>File Uploading Form</title>
+</head>
+<body>
+<h3>File Upload:</h3>
+压缩文件 <br />
+<form action="http://localhost:8080/uploadAndCompress" method="post"
+      enctype="multipart/form-data">
+    <input type="file" name="file" size="50" />
+    <br />
+    <input type="submit" value="Upload File" />
+</form>
+
+<br/>
+解压文件
+<form action="http://localhost:8080/uploadAnddecompression" method="post"
+      enctype="multipart/form-data">
+    <input type="file" name="file" size="50" />
+    <br />
+    <input type="submit" value="Upload File" />
+</form>
+</body>
+</html>

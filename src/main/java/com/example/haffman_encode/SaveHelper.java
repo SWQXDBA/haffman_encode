@@ -57,6 +57,15 @@ public class SaveHelper {
 
         return t;
     }
+    public static   <T>  T loadFromBytes(byte[]bytes) throws IOException, ClassNotFoundException {
+
+        ByteArrayInputStream ipt = new ByteArrayInputStream(bytes);
+        ObjectInputStream ois = new ObjectInputStream(ipt);
+        T t =(T)  ois.readObject();
+        ois.close();
+
+        return t;
+    }
     public byte[] getBytes(){
         return data;
     }

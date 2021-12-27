@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.yaml.snakeyaml.reader.StreamReader;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -18,15 +19,48 @@ import java.nio.file.Path;
 @RequestMapping
 @Controller
 public class Controllers {
+    String pathBase = "D:\\uploadFiles\\Files";
+    @RequestMapping(value = "uploadAnddecompression", method = RequestMethod.POST)
+    public void decompression(@RequestParam MultipartFile file, HttpServletResponse response) {
+        if (file == null || file.isEmpty()) {
+            return;
+        }
+        try {
+
+            Data data = SaveHelper.loadFromBytes(file.getBytes());
+            Path mapperPath = Path.of(pathBase, data.mapKey + ".mapper");
+
+            File file1 = mapperPath.toFile();
+            FileInputStream inputStream = new FileInputStream(file1);
+            CodeMapper codeMapper = SaveHelper.loadFromBytes(inputStream.readAllBytes());
+            inputStream.close();
+            data.setMapper(codeMapper);
+            String decode = data.decode();
+
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(data.fileName+".data", StandardCharsets.UTF_8));
+            response.addHeader("Content-Length", "" + decode.getBytes().length);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/octet-stream");
+
+            byte[] bytes = decode.getBytes(StandardCharsets.UTF_8);
+            ServletOutputStream outputStream = response.getOutputStream();
+            outputStream.write(bytes);
+            outputStream.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 上传文件 压缩
      *
      * @return
      */
+
+
     @RequestMapping(value = "uploadAndCompress", method = RequestMethod.POST)
     public void upload(@RequestParam MultipartFile file, HttpServletResponse response) {
-        String pathBase = "D:\\uploadFiles\\Files";
+
         if (!Files.exists(Path.of(pathBase))) {
             try {
                 Files.createDirectory(Path.of(pathBase));
@@ -48,14 +82,15 @@ public class Controllers {
             //把上传的文件读出来 放到s中
             Path path = Path.of("D:\\uploadFiles\\Files\\" + originalFilename);
             StringWriter stringWriter = new StringWriter();
-            FileReader reader = new FileReader(path.toString());
-            reader.transferTo(stringWriter);
+            InputStreamReader streamReader = new InputStreamReader(new ByteArrayInputStream(file.getBytes()));
+            streamReader.transferTo(stringWriter);
 
 
             String s = stringWriter.toString();
             //进行编码
             Data data = new Data();
             data.encoder(s);
+            data.fileName = file.getOriginalFilename();
 
             // 获取一个id 作为mapper的key 不考虑路径重复的问题
             long id = System.currentTimeMillis();

@@ -22,6 +22,8 @@ public class Data implements Serializable {
         this.encodeMapper = mapper.encodeMapper;
         this.decodeMapper = mapper.decodeMapper;
     }
+    //原文件名
+    public String fileName;
     public String mapKey;
     //数据的位数 除了data中标记的以外，其他都是0
     private int length;
