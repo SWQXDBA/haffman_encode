@@ -60,7 +60,7 @@ public class Controllers {
             // 获取一个id 作为mapper的key 不考虑路径重复的问题
             long id = System.currentTimeMillis();
             data.mapKey = id + "";
-            Path mapperPath = Path.of(pathBase, id + "", ".mapper");
+            Path mapperPath = Path.of(pathBase, id + ".mapper");
             //保存mapper
             FileOutputStream fileOutputStream = new FileOutputStream(mapperPath.toString());
             fileOutputStream.write(SaveHelper.toBytes(data.getMapper()));
