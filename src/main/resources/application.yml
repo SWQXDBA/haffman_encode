@@ -1,6 +1,7 @@
 spring:
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 100MB
+      max-file-size: 500MB
+      max-request-size: 1000MB
+      location: /data/upload_tmp
 debug: true

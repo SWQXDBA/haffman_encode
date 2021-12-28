@@ -40,7 +40,7 @@ public class Data implements Serializable {
 
     public void encoder(String s) {
 
-        List<String> strings = Arrays.asList(s.split("\n"));
+        List<String> strings = Arrays.asList(s.split(" "));
 
         Map<String, Integer> map = new HashMap<>();
         //设置权重为频率
@@ -63,6 +63,7 @@ public class Data implements Serializable {
                 }
             }
 
+            System.out.println("ookk");
         } catch (CantEncodeException e) {
             e.printStackTrace();
         }
@@ -86,6 +87,7 @@ public class Data implements Serializable {
         List<T> list = new ArrayList<>();
 
         String current = "";
+        System.out.println(length);
         for (int i = 0; i < length; i++) {
             current += data.get(i) ? "1" : "0";
             T t = (T) decodeMapper.get(current);
@@ -94,6 +96,7 @@ public class Data implements Serializable {
                 current = "";
             }
         }
+
         if (!"".equals(current)) {
             throw new CantDecodeException();
         }

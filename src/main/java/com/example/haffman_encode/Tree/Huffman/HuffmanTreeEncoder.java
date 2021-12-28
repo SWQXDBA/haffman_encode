@@ -34,6 +34,7 @@ public class HuffmanTreeEncoder<T extends Comparable<T>> {
         public T val;
         public Integer priority;//优先级 权重
 
+        public String code = "";
         public CodeNode(T val, Integer code) {
             this.val = val;
             this.priority = code;
@@ -82,20 +83,35 @@ public class HuffmanTreeEncoder<T extends Comparable<T>> {
             sum.right = right;
             stack.offer(sum);
         }
-        startEncode(tree.root, "");
+        startEncode(tree.root);
     }
 
-    private void startEncode(TreeNodeBase<CodeNode<T>> root, String code) {
+    private void startEncode(TreeNodeBase<CodeNode<T>> root) {
         if (root == null) {
             return;
         }
-        if (root.val.val == null) {
-            startEncode(root.left, code + "0");
-            startEncode(root.right, code + "1");
-        } else {
-        //    System.out.println(root.val.val + "编码为:" + code);
-            encodeMapper.put(root.val.val, code);
-            decodeMapper.put(code, root.val.val);
+        Stack<TreeNodeBase<CodeNode<T>>> stack = new Stack<>();
+        stack.add(root);
+        while(!stack.isEmpty()){
+            root=stack.pop();
+            //非叶子结点
+            if (root.val.val == null) {
+
+                if (root.right!=null){
+                    root.right.val.code = root.val.code + "1";
+                    stack.push(root.right);
+                }
+                if (root.left!=null){
+                    root.left.val.code = root.val.code + "0";
+                    stack.push(root.left);
+                }
+            }else {
+                //    System.out.println(root.val.val + "编码为:" + code);
+                encodeMapper.put(root.val.val, root.val.code);
+                decodeMapper.put(root.val.code, root.val.val);
+            }
+
+
         }
     }
 

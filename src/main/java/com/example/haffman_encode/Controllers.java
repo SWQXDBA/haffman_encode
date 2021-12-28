@@ -1,12 +1,13 @@
 package com.example.haffman_encode;
 
 
+import com.example.haffman_encode.Pojo.AjaxResult;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.yaml.snakeyaml.reader.StreamReader;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -18,15 +19,18 @@ import java.nio.file.Path;
 
 @RequestMapping
 @Controller
+@CrossOrigin
 public class Controllers {
     String pathBase = "D:\\uploadFiles\\Files";
-    @RequestMapping(value = "uploadAnddecompression", method = RequestMethod.POST)
-    public void decompression(@RequestParam MultipartFile file, HttpServletResponse response) {
+
+    @ResponseBody
+    @RequestMapping(value = "uploadAnddecompression")
+    public AjaxResult decompression(@RequestParam MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return;
+            return AjaxResult.error("不能上传空文件");
         }
         try {
-
+            System.out.println("开始解压");
             Data data = SaveHelper.loadFromBytes(file.getBytes());
             Path mapperPath = Path.of(pathBase, data.mapKey + ".mapper");
 
@@ -36,19 +40,51 @@ public class Controllers {
             inputStream.close();
             data.setMapper(codeMapper);
             String decode = data.decode();
-
-            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(data.fileName+".data", StandardCharsets.UTF_8));
-            response.addHeader("Content-Length", "" + decode.getBytes().length);
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/octet-stream");
+            System.out.println("解压成功");
 
             byte[] bytes = decode.getBytes(StandardCharsets.UTF_8);
-            ServletOutputStream outputStream = response.getOutputStream();
-            outputStream.write(bytes);
-            outputStream.close();
+            String deCompressedFileName = "解压后的文件" + data.mapKey + ".data";
+            Path compressedFilePath = Path.of(pathBase, deCompressedFileName);
+            FileOutputStream f = new FileOutputStream(compressedFilePath.toFile());
+            f.write(bytes);
+            f.close();
+
+            return AjaxResult.success("成功", deCompressedFileName);
+
+
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return AjaxResult.error("文件处理失败");
+    }
+
+    @RequestMapping(value = "downLoad")
+    public void decompression(String downloadPath, HttpServletResponse response) {
+        System.out.println("path:"+downloadPath);
+        Path targetPath = Path.of(pathBase, downloadPath);
+        if (!Files.exists(targetPath)) {
+            return;
+        }
+        File file = targetPath.toFile();
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] bytes = fileInputStream.readAllBytes();
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(downloadPath, StandardCharsets.UTF_8));
+            response.addHeader("Content-Length", "" + bytes.length);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/octet-stream");
+
+            ServletOutputStream outputStream = response.getOutputStream();
+            outputStream.write(bytes);
+            outputStream.close();
+            System.out.println("文件写回完成");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     /**
@@ -56,10 +92,9 @@ public class Controllers {
      *
      * @return
      */
-
-
-    @RequestMapping(value = "uploadAndCompress", method = RequestMethod.POST)
-    public void upload(@RequestParam MultipartFile file, HttpServletResponse response) {
+    @ResponseBody
+    @RequestMapping(value = "uploadAndCompress")
+    public AjaxResult upload(@RequestParam MultipartFile file) {
 
         if (!Files.exists(Path.of(pathBase))) {
             try {
@@ -69,12 +104,11 @@ public class Controllers {
             }
         }
         if (file == null || file.isEmpty()) {
-            return;
+            return AjaxResult.error("不能上传空文件");
         }
         String originalFilename = file.getOriginalFilename();
-        if (originalFilename == null || !originalFilename.endsWith(".txt")) {
-
-            return;
+        if (originalFilename == null) {
+            return AjaxResult.error("不能上传空文件");
         }
 
 
@@ -100,30 +134,21 @@ public class Controllers {
             FileOutputStream fileOutputStream = new FileOutputStream(mapperPath.toString());
             fileOutputStream.write(SaveHelper.toBytes(data.getMapper()));
             fileOutputStream.close();
-
-            //这个是压缩后的文件 需要写给用户
+            //这个是压缩后的文件 先保存起来
             byte[] dataBytes = SaveHelper.toBytes(data);
 
-            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("压缩后的文件" + id + ".data", StandardCharsets.UTF_8));
-            response.addHeader("Content-Length", "" + dataBytes.length);
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/octet-stream");
+            String compressedFileName = "压缩后的文件" + id + ".data";
+            Path compressedFilePath = Path.of(pathBase, compressedFileName);
+            FileOutputStream f = new FileOutputStream(compressedFilePath.toFile());
+            f.write(dataBytes);
+            f.close();
+            return AjaxResult.success("成功", compressedFileName);
 
-            ServletOutputStream outputStream = response.getOutputStream();
-            outputStream.write(dataBytes);
-            outputStream.close();
-/*
-            File file1 = new File(path.toString());
-            FileInputStream inputStream = new FileInputStream(file1);
-
-
-
-            response.getOutputStream().write(inputStream.readAllBytes());
-            inputStream.close();*/
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return AjaxResult.error("文件处理失败");
     }
+
 }
