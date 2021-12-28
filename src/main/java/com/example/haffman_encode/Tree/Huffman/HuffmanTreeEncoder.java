@@ -62,14 +62,6 @@ public class HuffmanTreeEncoder<T extends Comparable<T>> {
         build();
     }
 
-
-
-
-
-
-
-
-
     private void build() {
         while (!stack.isEmpty()) {
             TreeNodeBase<CodeNode<T>> left = stack.poll();
