@@ -2,6 +2,9 @@ package com.example.haffman_encode;
 
 
 import com.example.haffman_encode.Pojo.AjaxResult;
+import com.example.haffman_encode.Pojo.CodeMapper;
+import com.example.haffman_encode.Pojo.Data;
+import com.example.haffman_encode.ViewModel.KmpResponseViewModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +25,15 @@ import java.nio.file.Path;
 @CrossOrigin
 public class Controllers {
     String pathBase = "D:\\uploadFiles\\Files";
+    @ResponseBody
+    @RequestMapping(value = "kmp")
+    public AjaxResult kmp(String str1,String str2) {
+        KmpResponseViewModel model = new KmpResponseViewModel();
+        model.next = KMP.kmpNext(str2);
+        model.index = KMP.kmpSearch(str1, str2,model.next);
+        return AjaxResult.success(model);
+
+    }
 
     @ResponseBody
     @RequestMapping(value = "uploadAnddecompression")
@@ -30,18 +42,22 @@ public class Controllers {
             return AjaxResult.error("不能上传空文件");
         }
         try {
+            //对file反序列化
             System.out.println("开始解压");
             Data data = SaveHelper.loadFromBytes(file.getBytes());
             Path mapperPath = Path.of(pathBase, data.mapKey + ".mapper");
-
+            //根据信息找到mapper
             File file1 = mapperPath.toFile();
             FileInputStream inputStream = new FileInputStream(file1);
             CodeMapper codeMapper = SaveHelper.loadFromBytes(inputStream.readAllBytes());
             inputStream.close();
+            //设置mapper
             data.setMapper(codeMapper);
+            //解压
             String decode = data.decode();
             System.out.println("解压成功");
 
+            //保存解压后的文件到本地 返回url
             byte[] bytes = decode.getBytes(StandardCharsets.UTF_8);
             String deCompressedFileName = "解压后的文件" + data.mapKey + ".data";
             Path compressedFilePath = Path.of(pathBase, deCompressedFileName);
@@ -61,7 +77,7 @@ public class Controllers {
 
     @RequestMapping(value = "downLoad")
     public void decompression(String downloadPath, HttpServletResponse response) {
-        System.out.println("path:"+downloadPath);
+
         Path targetPath = Path.of(pathBase, downloadPath);
         if (!Files.exists(targetPath)) {
             return;

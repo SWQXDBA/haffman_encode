@@ -1,13 +1,12 @@
-package com.example.haffman_encode;
+package com.example.haffman_encode.Pojo;
 
+import com.example.haffman_encode.Pojo.CodeMapper;
 import com.example.haffman_encode.Tree.Exceptions.CantDecodeException;
 import com.example.haffman_encode.Tree.Exceptions.CantEncodeException;
 import com.example.haffman_encode.Tree.Huffman.HuffmanTreeEncoder;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Data implements Serializable {
 

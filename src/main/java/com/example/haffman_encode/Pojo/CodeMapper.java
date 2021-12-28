@@ -1,4 +1,4 @@
-package com.example.haffman_encode;
+package com.example.haffman_encode.Pojo;
 
 import java.io.Serializable;
 import java.util.Map;

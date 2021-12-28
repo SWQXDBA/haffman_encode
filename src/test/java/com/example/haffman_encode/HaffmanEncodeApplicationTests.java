@@ -1,10 +1,11 @@
 package com.example.haffman_encode;
 
+import com.example.haffman_encode.Pojo.CodeMapper;
+import com.example.haffman_encode.Pojo.Data;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.Map;
 
 @SpringBootTest
 class HaffmanEncodeApplicationTests {
