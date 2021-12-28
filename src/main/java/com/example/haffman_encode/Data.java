@@ -63,7 +63,6 @@ public class Data implements Serializable {
                 }
             }
 
-            System.out.println("ookk");
         } catch (CantEncodeException e) {
             e.printStackTrace();
         }
