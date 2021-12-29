@@ -3,16 +3,7 @@ package com.example.haffman_encode;
 import java.util.Arrays;
 
 public class KMP {
-    public static void main(String[] args) {
-        String str1 = "BBC ABCDAB ABCDABCDABDE";
-        String str2 = "ABCDABD";
-        //String str2 = "BBC";
-        int[] next = kmpNext("ABCDABD"); //[0, 1, 2, 0]
-        System.out.println("next=" + Arrays.toString(next));
-        int index = kmpSearch(str1, str2, next);
-        System.out.println("index=" + index); // 15 了
 
-    }
 
     /**
      * @param str1 源字符串
