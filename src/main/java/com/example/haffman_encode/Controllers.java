@@ -142,6 +142,7 @@ public class Controllers {
             data.encoder(s);
             data.fileName = file.getOriginalFilename();
 
+
             // 获取一个id 作为mapper的key 不考虑路径重复的问题
             long id = System.currentTimeMillis();
             data.mapKey = id + "";

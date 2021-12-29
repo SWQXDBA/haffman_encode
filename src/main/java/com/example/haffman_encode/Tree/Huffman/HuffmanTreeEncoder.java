@@ -3,15 +3,13 @@ package com.example.haffman_encode.Tree.Huffman;
 import com.example.haffman_encode.Tree.BinaryTree.BinarySerchTree.MyBinarySearchTree;
 import com.example.haffman_encode.Tree.BinaryTree.BinarySerchTree.TreeNodeBase;
 import com.example.haffman_encode.Tree.BinaryTree.TreePrinter;
-import com.example.haffman_encode.Tree.Exceptions.CantDecodeException;
-import com.example.haffman_encode.Tree.Exceptions.CantEncodeException;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HuffmanTreeEncoder<T extends Comparable<T>> {
-    PriorityQueue<TreeNodeBase<CodeNode<T>>> stack = new PriorityQueue<>();
+    PriorityQueue<TreeNodeBase<CodeNode<T>>> heap = new PriorityQueue<>();
     MyBinarySearchTree<CodeNode<T>> tree = new MyBinarySearchTree<>();
     Function<? super T, ? extends Integer> mapper;
 
@@ -57,23 +55,23 @@ public class HuffmanTreeEncoder<T extends Comparable<T>> {
                 .distinct()
                 .collect(Collectors.toList());
         for (T t : collection) {
-            stack.offer(new TreeNodeBase<>(new CodeNode<>(t, mapper.apply(t))));
+            heap.offer(new TreeNodeBase<>(new CodeNode<>(t, mapper.apply(t))));
         }
         build();
     }
 
     private void build() {
-        while (!stack.isEmpty()) {
-            TreeNodeBase<CodeNode<T>> left = stack.poll();
-            if (stack.isEmpty()) {
+        while (!heap.isEmpty()) {
+            TreeNodeBase<CodeNode<T>> left = heap.poll();
+            if (heap.isEmpty()) {
                 tree.root = left;
                 break;
             }
-            TreeNodeBase<CodeNode<T>> right = stack.poll();
+            TreeNodeBase<CodeNode<T>> right = heap.poll();
             TreeNodeBase<CodeNode<T>> sum = new TreeNodeBase<>(new CodeNode<>(null, left.getVal().priority + right.getVal().priority));
             sum.left = left;
             sum.right = right;
-            stack.offer(sum);
+            heap.offer(sum);
         }
         startEncode(tree.root);
     }
