@@ -54,10 +54,7 @@ public class Data implements Serializable {
             String code = genCode(strings);
             length = code.length();
 
-            encodeMapper.forEach((key,value)->{
-                System.out.println("key:"+key+" value:"+value);
-            });
-            System.out.println(code);
+
             //编码后可以用bit存储
             data = new BitSet();
             char[] chars = code.toCharArray();
