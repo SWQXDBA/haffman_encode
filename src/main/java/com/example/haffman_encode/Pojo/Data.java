@@ -53,6 +53,8 @@ public class Data implements Serializable {
 
             String code = genCode(strings);
             length = code.length();
+
+
             //编码后可以用bit存储
             data = new BitSet();
             char[] chars = code.toCharArray();
