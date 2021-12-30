@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class HaffmanEncodeApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {//
         SpringApplication.run(HaffmanEncodeApplication.class, args);
     }
 
